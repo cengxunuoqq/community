@@ -1,0 +1,86 @@
+package com.lg.community.service;
+
+import com.lg.community.dao.MessageMapper;
+import com.lg.community.entity.Message;
+import com.lg.community.util.SensitiveFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
+
+import java.util.List;
+
+@Service
+public class MessageService {
+
+    @Autowired
+    private SensitiveFilter sensitiveFilter;
+
+    @Autowired
+    private MessageMapper messageMapper;
+
+    public List<Message> findConversations(int userId, int offset, int limit) {
+        return messageMapper.selectConversations(userId, offset, limit);
+    }
+
+    public int findConversationCount(int userId) {
+        return messageMapper.selectConversationCount(userId);
+    }
+
+    public List<Message> findLetters(String conversationId, int offset, int limit) {
+        return messageMapper.selectLetters(conversationId, offset, limit);
+    }
+
+    public int findLetterCount(String conversationId) {
+        return messageMapper.selectLetterCount(conversationId);
+    }
+
+    public int findLettersUnreadCount(int userId, String conversationId) {
+        return messageMapper.selectLetterUnreadCount(userId, conversationId);
+    }
+
+    public int addMessage(Message message) {
+        message.setContent(HtmlUtils.htmlEscape(message.getContent()));
+        message.setContent(sensitiveFilter.filter(message.getContent()));
+        return messageMapper.insertMessage(message);
+    }
+
+    /**
+     * 改变消息为已读
+     * @param ids
+     * @return
+     */
+    public int readMessage(List<Integer> ids) {
+        return messageMapper.updateStatus(ids, 1);
+    }
+
+    /**
+     * 查询最新的通知
+     * @param userId
+     * @param topic
+     * @return
+     */
+    public Message findLatestNotice(int userId,String topic) {
+        return messageMapper.selectLatestNotice(userId, topic);
+    }
+
+    /**
+     * 查询用户某个主题的通知数量
+     * @param userId
+     * @param topic
+     * @return
+     */
+    public int findNoticeCount(int userId,String topic) {
+        return messageMapper.selectNoticeCount(userId, topic);
+    }
+
+    /**
+     * 查询某个用户（某个主题）未读的通知数量
+     * @param userId
+     * @param topic
+     * @return
+     */
+    public int findNoticeUnreadCount(int userId, String topic) {
+        return messageMapper.selectNoticeUnreadCount(userId, topic);
+    }
+
+}

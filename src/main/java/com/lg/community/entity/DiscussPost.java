@@ -5,14 +5,14 @@ import javafx.beans.binding.IntegerExpression;
 import java.util.Date;
 
 public class DiscussPost {
-    private Integer id;
-    private Integer userId;
+    private int id;
+    private int userId;
     private String title;
     private String content;
-    private Integer type;
-    private Integer status;
+    private int type;
+    private int status;
     private Date createTime;
-    private Integer commentCount;
+    private int commentCount;
     private Double score;
 
     @Override
